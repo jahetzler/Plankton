@@ -82,10 +82,12 @@ summary(DATA0$Biomass)
 #test for difference in two different sites, use students t-test__________________
 
 
-hist(DATA[1:3,3], freq = FALSE, xlab = "length", main = "Distribution of Length", col = "lightgray", xlim = c(1700,2200), ylim = c(0,0.015))
+hist(DATA[1:3,3], freq = FALSE, xlab = "Biomass", main = "Distribution of Biomass", col = "lightgray", xlim = c(1700,2200), ylim = c(0,0.015),)
 hist(DATA[4:6,3], add = T, freq = FALSE, col = "darkgray", xlim = c(1600,2300), ylim = c(0,0.015))
 curve(dnorm(x, mean=mean(DATA[1:3,3]), sd = sd(DATA0[1:9,4])), add = TRUE, col="Orange", lwd = 2)
 curve(dnorm(x, mean=mean(DATA[4:6,3]), sd = sd(DATA0[10:18,4])), add = TRUE, col="black", lwd = 2)
+
+boxplot(DATA[1:3,3], DATA[4:6,3])#guess this gives more information than the data above
 
 #t-test mess 
 mean(DATA[1:3,3])#Mistfjord
@@ -96,6 +98,8 @@ mean(DATA[4:6,3])#Nordfjord
 sd(DATA0[4:6,3])#Nordfjord
 var(DATA0[4:6,3])#Nordfjord
 
+
+
 plot(DATA$Biomass ~ DATA$Fjord)
 
 a <- t.test(Biomass ~ Fjord, data = DATA)#more noise than signal t < 1
@@ -103,3 +107,5 @@ str(a)
 a
 
 t.test(Biomass ~ Sample == c("M1", "M2", "M4"), data = DATA)#t-test for inside the fjords
+
+
