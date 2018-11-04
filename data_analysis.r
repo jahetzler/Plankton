@@ -3,14 +3,16 @@
 #TO DO: enter other taxa than copepods, and size of copepods in excel, get CTD data
 
 #Setup ####
-setwd("")
+setwd("~/R/Vitenskapelig_metode/Project/Rev_2")
 
 #LIBRARY 
 library(readr)
+library(reshape)
 library(ggmap)
 library(ggplot2)
 library(oce)
 library(effects)
+
 
 #Import Data ####
 
@@ -26,24 +28,50 @@ rm(DATA_temp, DATA_mean, MEAN) #Clean up environment
 View(DATA)
 
 #CTD
-CTD <- read.csv("CTD_mist - Copy.txt", sep = ";") #Import CTD as txt file
+CTD <- read.csv("CTD_edit_1.txt", sep = ";") #Import CTD as txt file
 CTD$X.1 <- NULL#remove NA value
 CTD$X <- NULL#remove NA value
 CTD<-CTD[!(CTD$Depth.u.==0),] #remove CTD entry from 0m depth
-colnames(CTD) <- c("Ser", "Meas", "Salinity", "Temp", "Oxygen", "mg.l", "Fluorine", "Density",  "Depth.u.", "Date", "Time")
+colnames(CTD) <- c("Ser", "Meas", "Salinity", "Temp", "Oxygen", "mg.l", "Fluoride", "Density",  "Depth", "Date", "Time") #rename columns
+CTD$Seq <- with(CTD, ave(seq_along(Ser), Ser, FUN=seq_along))#seq for Ser
+CTD$Ser <- paste("M", CTD$Ser)
+CTD$Fjord[928:1846] <- "saltfjord";CTD$Fjord[1:927] <- "mistfjord"
+
+CTD$Fjord[418:791] <- "saltfjord";CTD$Fjord[1:417] <- "mistfjord"
 View(CTD)
 
 CTD_mean <- aggregate(. ~Ser, data=CTD, mean, na.rm=TRUE)
 View(CTD_mean)
 
+#FIND CODE FOR DELETING DEPTH AFTER BOTTOM IS REACHED, TEMP SOLUTION: CHANGE DEPTH MANUALY IN TXT FILE
 
 
 #Taxanomic plot ####
+library(reshape)
 b <- melt(DATA[,-c(3:6,1,8,21)])
 
 ggplot(data = b, aes(x=Site, y= value/100 , fill=variable)) + 
   geom_bar(stat="identity",position="fill", colour="black") +
   labs(y = "Relative abundance")
+
+
+#CTD plots ####
+
+
+ggplot(data = CTD, aes(x = Seq, y = Temp, by = Ser, color = Ser)) + 
+  #geom_point() + 
+  #geom_line() + 
+  geom_smooth() + 
+  labs(x = "Time in sec")
+
+ggplot(data = CTD, aes(x = Depth, y = Temp, by = Ser, color = Ser)) + 
+  #geom_point() + 
+  geom_line() +
+  #geom_smooth() + 
+  labs(x = "Depth", color = "Sites") + 
+  facet_grid(. ~ Fjord)+
+  theme(legend.position = c(0.8, 0.9)) + 
+  scale_color_palname("springfield")
 
 
 #DATA ANALYSIS ####
