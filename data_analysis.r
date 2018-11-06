@@ -3,7 +3,7 @@
 #TO DO: enter other taxa than copepods, and size of copepods in excel, get CTD data
 
 #Setup ####
-setwd("~/R/Vitenskapelig_metode/Project/Rev_2")
+setwd("~/R/zooplankton")
 
 #LIBRARY 
 library(readr)
@@ -17,18 +17,28 @@ library(effects)
 #Import Data ####
 
 #ZOOPLANKTON
-DATA0 <- read.csv("Zooplankton_Rsheet.csv", head = TRUE)
+DATA0 <- read.csv("Zooplankton_data.csv", head = TRUE)
 View(DATA0)
+
 
 MEAN <-function(y){do.call(rbind,as.list(by(y,DATA0$Site,mean)))} #new dataframe based on the mean of the sub samples
 DATA_mean <- apply(DATA0[,4:17],2,MEAN)
-DATA_temp <- (DATA0[c(1,4,7,10,13,15),c(1,2,3,18,19,20,21)])
+DATA_temp <- (DATA0[c(1,4,7,10,13,15),c(1,2,3,18,19,20)])
 DATA <- cbind(DATA_temp, DATA_mean)
 rm(DATA_temp, DATA_mean, MEAN) #Clean up environment
 View(DATA)
+a <- DATA
+
+#watercolumn sample function x/m^3
+sample_density_cop = function(x) {
+  x <- (x * 200)/18.75# 200ml sample from half of the sample (2x), devided by waterculm volume
+  
+  return(x)
+}
+DATA[,7:20] <- sample_density_cop(DATA[,7:20])
 
 #CTD
-CTD <- read.csv("CTD_edit_1.txt", sep = ";") #Import CTD as txt file
+CTD <- read.csv("CTD_mist - Copy.txt", sep = ";") #Import CTD as txt file
 CTD$X.1 <- NULL#remove NA value
 CTD$X <- NULL#remove NA value
 CTD<-CTD[!(CTD$Depth.u.==0),] #remove CTD entry from 0m depth
@@ -36,6 +46,7 @@ colnames(CTD) <- c("Ser", "Meas", "Salinity", "Temp", "Oxygen", "mg.l", "Fluorid
 CTD$Seq <- with(CTD, ave(seq_along(Ser), Ser, FUN=seq_along))#seq for Ser
 CTD$Ser <- paste("M", CTD$Ser)
 CTD$Fjord[928:1846] <- "saltfjord";CTD$Fjord[1:927] <- "mistfjord"
+
 
 CTD$Fjord[418:791] <- "saltfjord";CTD$Fjord[1:417] <- "mistfjord"
 View(CTD)
@@ -69,9 +80,7 @@ ggplot(data = CTD, aes(x = Depth, y = Temp, by = Ser, color = Ser)) +
   geom_line() +
   #geom_smooth() + 
   labs(x = "Depth", color = "Sites") + 
-  facet_grid(. ~ Fjord)+
-  theme(legend.position = c(0.8, 0.9)) + 
-  scale_color_palname("springfield")
+  facet_grid(. ~ Fjord)
 
 
 #DATA ANALYSIS ####
@@ -93,22 +102,6 @@ fit = lm(data = DATA0, Zooplankton_all ~ Copepods)
 plot(data = DATA0, Zooplankton_all ~Copepods, xlim = c(0,450), ylim=c(0,800))
 abline(fit, col="gray")
 #COMPARE ZOOPLANKTON_ALL TO BIOMASS WITH THE SAME TEST AS ABOVE
-
-
-#watercolumn sample function x/m^3 ####
-sample_density_cop = function(x) {
-  x <- (x * 200)/18.75# 200ml sample from half of the sample (2x), devided by waterculm volume
-  
-  return(x)
-}
-sample_density_bio = function(x){
-  x <- (x*2)/18.75
-  return(x)
-}
-
-Bio_cubic <- sample_density_bio(DATA$Biomass)# biomass in seawater (mg/m^2)
-Cop_cubic <- sample_density_cop(DATA$Copepods)# copepods in seawater (n/m^2)
-plot(Bio_cubic,Cop_cubic)
 
 
 #MAP ####
