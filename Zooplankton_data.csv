@@ -1,6 +1,6 @@
 ID,Site,Biomass,Copepods,Small_Copepods,Big_Copepods,Jelly_Fish,Snail,Bryozoa,Dinoflagellata,Bivalvia,Platyhelminthea,Britlestar,Chaetognatha,Echinodermata,Cnidaria,Zooplankton_all,Lat,Lon,Fjord
 1,M1,34.58,53,43,10,2,0,0,0,0,0,0,0,0,0,55,67.4487778,14.9053889,Mistfjord
-2,M1,34.58,8,49,11,0,0,1,0,0,0,0,0,0,0,61,67.4487778,14.9053889,Mistfjord
+2,M1,34.58,60,49,11,0,0,1,0,0,0,0,0,0,0,61,67.4487778,14.9053889,Mistfjord
 3,M1,34.58,62,59,3,0,0,14,3,0,0,0,0,1,0,80,67.4487778,14.9053889,Mistfjord
 4,M2,246.52,243,163,80,0,2,23,1,9,0,0,0,0,0,278,67.4601389,14.7948056,Mistfjord
 5,M2,246.52,214,210,4,0,1,15,2,0,0,0,0,0,0,232,67.4601389,14.7948056,Mistfjord
