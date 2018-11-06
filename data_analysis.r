@@ -59,7 +59,7 @@ View(CTD_mean)
 
 #Taxanomic plot ####
 library(reshape)
-b <- melt(DATA[,-c(3:6,1,8,21)])
+b <- melt(DATA[,-c(3:6,1,8,20)])
 
 ggplot(data = b, aes(x=Site, y= value/100 , fill=variable)) + 
   geom_bar(stat="identity",position="fill", colour="black") +
@@ -135,15 +135,15 @@ max(by(DATA$Biomass,DATA$Fjord,sd))^2/min(by(DATA$Biomass,DATA$Fjord,sd))^2 # 3.
 car::Anova(fit,type="III",white.adjust=TRUE) 
 
 #ANOVA test difference for sampling sites ####
-fit <- aov(Sum_zooplankton ~ Site, data = DATA0)
+fit <- aov(Zooplankton_all ~ Site, data = DATA0)
 summary.lm(fit)
 summary(fit)
 
 plot(allEffects(fit,confidence.level = 0.95))
-boxplot(Sum_zooplankton~Site, data=DATA0,ylab="Biomass",col="lightblue")
+boxplot(Zooplankton_all~Site, data=DATA0,ylab="Biomass",col="lightblue")
 
 #errr, 2-way anova zooplankton_all by fjord and biomass
-fit <- aov(Sum_zooplankton ~ Fjord + Biomass, data = DATA)
+fit <- aov(Zooplankton_all ~ Fjord + Biomass, data = DATA)
 summary(fit)
 
 plot(fit)
@@ -172,3 +172,4 @@ a <- t.test(Biomass ~ Fjord, data = DATA)#more noise than signal t < 1
 str(a)
 
 t.test(Biomass ~ Sample == c("M1", "M2", "M4"), data = DATA)#t-test for inside the fjords
+
