@@ -103,3 +103,10 @@ pairwise.t.test(DATA0$Zooplankton_all,DATA0$Loc,p.adj="none",paired=F)
 fit=aov(Zooplankton_all~Loc, data=DATA0)
 summary.lm(fit)
 summary(fit)
+
+#ANOVA-test for location in Mistfjord
+Mistfjord <-subset(DATA0, Fjord=="Mistfjord")
+fit=aov(Zooplankton_all~Loc, data=Mistfjord)
+summary.lm(fit)
+summary(fit)
+boxplot(Zooplankton_all~Loc, data=Mistfjord, ylab="Zooplankton")
