@@ -20,6 +20,7 @@ library(effects)
 DATA0 <- read.csv("Zooplankton_data.csv", head = TRUE)
 View(DATA0)
 
+#run to line 54 to get DATA0 = all scaled data, DATA = mean data table, CTD data 
 #Run this code for scaling of data
 MEAN <-function(y){do.call(rbind,as.list(by(y,DATA0$Site,mean)))} #new dataframe based on the mean of the sub samples
 DATA_mean <- apply(DATA0[,4:17],2,MEAN)
@@ -36,6 +37,7 @@ sample_density_cop = function(x) {
   return(x)
 }
 DATA[,7:20] <- sample_density_cop(DATA[,7:20])
+DATA0[,4:17] <- sample_density_cop(DATA0[,4:17])
 
 #CTD
 CTD <- read.csv("CTD_mist - Copy.txt", sep = ";") #Import CTD as txt file
@@ -55,12 +57,18 @@ View(CTD_mean)
 library(reshape)
 b <- melt(DATA[,-c(3,5:7,1,20)])
 
+#relative abundance plot
 ggplot(data = b, aes(x=Site, y= value/100 , fill=variable)) + 
   geom_bar(stat="identity",position="fill", colour="black") +
   labs(y = "Relative abundance")
+#abundance plot
+ggplot(data = b, aes(x=Site, y= value, fill=variable)) + 
+  geom_bar(stat="identity", colour="black") +
+  labs(y = "Abundance")
 
-ggplot(data = b, aes(x="", fill=variable)) + 
-  geom_bar(position="fill", colour="black") +
+#Pie chart
+ggplot(data = b, aes(x="",y=value, fill=variable)) + 
+  geom_bar(stat="identity",position="fill", colour="black") +
   labs(y = "Relative abundance")+ 
   facet_grid(. ~ Fjord)+
   coord_polar(theta = "y")
@@ -68,13 +76,13 @@ ggplot(data = b, aes(x="", fill=variable)) +
 #CTD plots ####
 
 
-#
+#Temperature plot
 ggplot(data = CTD, aes(x = Depth, y = Temp, by = Ser, color = Ser)) + 
   geom_line() +
   labs(x = "Depth", color = "Sites") + 
   facet_grid(. ~ Fjord)
 
-
+#relation between temp and floresence
 ggplot(data = CTD, aes(x = Temp, y = Fluoride, by = Ser, color = Ser))+
   geom_point()+
   facet_grid(. ~ Ser) +
@@ -84,3 +92,14 @@ ggplot(data = CTD, aes(x = Temp, y = Fluoride, by = Ser, color = Ser))+
 pointLabels <- annotate("text",x=DATA0$Lon,y=c(DATA0$Lat),size=3,label=as.vector(DATA0$Site))
 map <- qmplot(Lon, Lat, data = DATA0, zoom = 10, maptype = "toner-lite", color = I("red")) + pointLabels
 map
+
+#ANOVA Test between relative sampling sites
+library(doBy)
+summaryBy(Zooplankton_all~Loc, data=DATA0, FUN=c(mean,sd,length))
+
+boxplot(Zooplankton_all~Loc, data=DATA0, ylab="Zooplankton")
+pairwise.t.test(DATA0$Zooplankton_all,DATA0$Loc,p.adj="none",paired=F)
+
+fit=aov(Zooplankton_all~Loc, data=DATA0)
+summary.lm(fit)
+summary(fit)
