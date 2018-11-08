@@ -45,12 +45,11 @@ CTD<-CTD[!(CTD$Depth.u.==0),] #remove CTD entry from 0m depth
 colnames(CTD) <- c("Ser", "Meas", "Salinity", "Temp", "Oxygen", "mg.l", "Fluoride", "Density",  "Depth", "Date", "Time") #rename columns
 CTD$Seq <- with(CTD, ave(seq_along(Ser), Ser, FUN=seq_along))#seq for Ser
 CTD$Ser <- paste("M", CTD$Ser)
-CTD$Fjord[928:1846] <- "saltfjord";CTD$Fjord[1:927] <- "mistfjord"
-
-
-CTD$Fjord[418:791] <- "saltfjord";CTD$Fjord[1:417] <- "mistfjord"
+CTD$Fjord[429:770] <- "saltfjord";CTD$Fjord[1:428] <- "mistfjord"
 View(CTD)
 
+CTD_mean <- aggregate(. ~Ser, data=CTD, mean, na.rm=TRUE)
+View(CTD_mean)
 CTD_mean <- aggregate(. ~Ser, data=CTD, mean, na.rm=TRUE)
 View(CTD_mean)
 
